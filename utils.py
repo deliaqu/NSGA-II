@@ -33,7 +33,6 @@ class NSGA2Utils:
         self.n = problem.n
         self.power_law = None
         if power_law:
-            print("Using Power Law")
             n = self.n
             dist = (linspace(1, n//2, n//2) ** (- 1.5)).cumsum()
             dist /= dist[-1]
@@ -97,9 +96,8 @@ class NSGA2Utils:
         else:
             return -1
 
-    def create_children(self, population, output_population_dynamics):
+    def create_children(self, population):
         children = []
-        successful_parents = []
         while len(children) < len(population):
             parent1 = self.__tournament(population)
             parent2 = self.__tournament(population)
@@ -116,25 +114,7 @@ class NSGA2Utils:
             self.problem.calculate_objectives(child2)
             children.append(child1)
             children.append(child2)
-            if output_population_dynamics and (0 not in child1.features or 0 not in child2.features):
-                assert len(parent1.features) == len(parent2.features)
-                h = 0
-                c1 = 0
-                c2 = 0
-                for i in range(len(parent1.features)):
-                    if parent1.features[i] != parent2.features[i]:
-                        h += 1
-                    if parent1.features[i] == 1:
-                        c1 += 1
-                    if parent2.features[i] == 1:
-                        c2 += 1
-                if self.crossover_prob > 0:
-                    successful_parents.append((c1, c2, h))
-                elif 0 not in child1.features:
-                    successful_parents.append((c1,))
-                else:
-                    successful_parents.append((c2,))
-        return children, successful_parents
+        return children
 
     def __crossover(self, individual1, individual2):
         child1 = self.problem.generate_individual()

@@ -11,9 +11,6 @@ class Evolution:
         self.num_of_individuals = num_of_individuals
         self.power_law = power_law
         self.goal = goal
-        self.output_population_dynamics = output_population_dynamics
-        self.population_dynamics = []
-        self.successful_parents = []
 
     def stop(self, population):
         if not population: return False
@@ -25,33 +22,16 @@ class Evolution:
                 return False
         return True
 
-    def calculate_population_dynamics(self):
-        nums = [0 for i in range(self.utils.n+1)]
-        features = [ind.features for ind in self.population]
-        for fea in features:
-            num_one = fea.count(1)
-            nums[num_one] += 1
-        self.population_dynamics.append(nums)
-    
-    def found_all_ones(self):
-        for ind in self.population:
-            if 0 not in ind.features:
-                return True
-        return False
-
     def evolve(self):
         self.population = self.utils.create_initial_population()
         self.utils.fast_nondominated_sort(self.population)
         for front in self.population.fronts:
             self.utils.calculate_crowding_distance(front)
-        children, successful_parents = self.utils.create_children(self.population, self.output_population_dynamics)
+        children = self.utils.create_children(self.population, self.output_population_dynamics)
         returned_population = None
         generation = 0
-        if self.output_population_dynamics and not self.found_all_ones():
-            successful_parents = [(pair) + (generation,) for pair in successful_parents]
-            self.successful_parents.extend(successful_parents)
 
-        stop, missing = self.stop(returned_population)
+        stop = self.stop(returned_population)
         while not stop:
             if self.output_population_dynamics and generation % 500 == 0:
                 self.calculate_population_dynamics()
@@ -82,10 +62,7 @@ class Evolution:
             self.utils.fast_nondominated_sort(self.population)
             for front in self.population.fronts:
                 self.utils.calculate_crowding_distance(front)
-            children, successful_parents = self.utils.create_children(self.population, self.output_population_dynamics)
-            if self.output_population_dynamics and not self.found_all_ones():
-                successful_parents = [(pair) + (generation,) for pair in successful_parents]
-                self.successful_parents.extend(successful_parents)
+            children = self.utils.create_children(self.population, self.output_population_dynamics)
             stop = self.stop(returned_population)
         print(generation)
-        return returned_population, generation, self.population_dynamics, self.successful_parents
+        return generation

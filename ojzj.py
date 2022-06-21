@@ -11,7 +11,6 @@ flags.DEFINE_integer('k', 3, '')
 flags.DEFINE_integer('population_coefficient', 4, '')
 flags.DEFINE_boolean('power_law', False, '')
 flags.DEFINE_float('crossover_prob', 0, '')
-flags.DEFINE_boolean('output_population_dynamics', False, '')
 
 
 def f1(x, n, k):
@@ -40,11 +39,10 @@ def main(argv):
     num_of_individuals = FLAGS.population_coefficient * (n - 2*k + 3)
     problem = Problem(n=n, k=k, objectives=[f1, f2])
     opt = optima(n,k)
-    print(opt)
     evo = Evolution(problem, num_of_individuals, num_of_tour_particips=2, 
                     power_law=FLAGS.power_law, crossover_prob=FLAGS.crossover_prob,
                     goal=opt, output_population_dynamics=FLAGS.output_population_dynamics)
-    _, generation, _, _ = evo.evolve()
+    generation = evo.evolve()
 
     filename = '{}_{}_{}'.format(n, k, FLAGS.population_coefficient)
     if FLAGS.power_law:
