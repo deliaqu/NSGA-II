@@ -102,7 +102,7 @@ class NSGA2Utils:
             parent1 = self.__tournament(population)
             parent2 = self.__tournament(population)
             if self.crossover_prob > 0:
-                while parent2 == parent1:
+                while parent2 is parent1:
                     parent2 = self.__tournament(population)
             child1 = copy.deepcopy(parent1)
             child2 = copy.deepcopy(parent2)
