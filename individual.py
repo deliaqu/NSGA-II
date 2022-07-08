@@ -13,10 +13,20 @@ class Individual(object):
             return self.features == other.features
         return False
 
-    def dominates(self, other_individual):
+    def weakly_dominates(self, other_individual):
         assert len(self.objectives) == len(other_individual.objectives)
         for index, obj in enumerate(self.objectives):
-            if obj <= other_individual.objectives[index]:
+            if obj < other_individual.objectives[index]:
                 return False
         return True
+
+    def dominates(self, other_individual):
+        assert len(self.objectives) == len(other_individual.objectives)
+        strict = False
+        for index, obj in enumerate(self.objectives):
+            if obj < other_individual.objectives[index]:
+                return False
+            if not strict and obj > other_individual.objectives[index]:
+                strict = True
+        return strict
 
